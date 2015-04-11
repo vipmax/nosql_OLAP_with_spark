@@ -28,7 +28,6 @@ object main {
        where("timeperiod = ?", "1m").map(cr => {println("select " + cr); cr}).map(r=> {println("r = " + r); r}).
        groupBy(row => (row.get[Int]("instanceid"),row.get[Int]("parameterid"), row.get[DateTime]("time").getHourOfDay)).map(r=> { println("groupby "+r); r}).
        map(r => {
-         val key = r._1  //instance id, parameter id,time hour
          val instanceId = r._1._1
          val parameterId = r._1._2
          val time = r._2.head.get[DateTime]("time").withMinuteOfHour(0)
