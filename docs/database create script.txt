@@ -1,0 +1,8 @@
+create COLUMNFAMILY Facts (ProjectId decimal, InstanceId decimal,ParameterId decimal,Time timestamp,TimePeriod text,MaxValue double,MinValue double,AvgValue double,SumValue double, PRIMARY KEY ((ProjectId,InstanceId, ParameterId,TimePeriod), Time));
+create COLUMNFAMILY RawData (InstanceId decimal, ParameterId decimal,Time timestamp,TimePeriod text,Value double,PRIMARY KEY ((InstanceId, ParameterId), Time));
+create COLUMNFAMILY Projects (ProjectId decimal, Name text,PRIMARY KEY (ProjectId));
+create COLUMNFAMILY Instances (InstanceId decimal, Name text,  PRIMARY KEY (InstanceId));
+create COLUMNFAMILY Parameters (ParameterId decimal, Name text,Unit text,PRIMARY KEY (ParameterId));
+create COLUMNFAMILY ParametersInstancesMapping(ParameterId decimal,InstanceId decimal,PRIMARY KEY (ParameterId,InstanceId));
+create COLUMNFAMILY ProjectsInstancesMapping(ProjectId decimal,InstanceId decimal,PRIMARY KEY (ProjectId,InstanceId));
+
