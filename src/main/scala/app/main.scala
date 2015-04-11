@@ -3,10 +3,6 @@ import com.datastax.spark.connector._
 import org.apache.spark.{SparkConf, SparkContext}
 import org.joda.time.DateTime
 
-
-/**
-  * Created by max on 10.03.2015.
-  */
 object main {
 
   val projectsInstancesMap = Map(1 -> List(1), 2 -> List(2, 3, 4))
@@ -15,17 +11,13 @@ object main {
 
 
   def main(args: Array[String]) {
-    val projectId = getProjectId(3)
-    println("projectId = " + projectId)
 
      val conf = new SparkConf().setMaster("local[4]").setAppName("tests").set("spark.cassandra.connection.host", "127.0.0.1")
      val sc = new SparkContext(conf)
 
-//     sc.cassandraTable("monitoring", "projects")
-
      sc.cassandraTable("monitoring", "rawdata").
        select("instanceid", "parameterid","time", "timeperiod", "value").
-       where("timeperiod = ?", "1m").map(cr => {println("select " + cr); cr}).map(r=> {println("r = " + r); r}).
+       where("timeperiod = ?", "1m").map(cr => {println(cr); cr}).
        groupBy(row => (row.get[Int]("instanceid"),row.get[Int]("parameterid"), row.get[DateTime]("time").getHourOfDay)).map(r=> { println("groupby "+r); r}).
        map(r => {
          val instanceId = r._1._1
