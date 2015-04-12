@@ -1,8 +1,46 @@
-create COLUMNFAMILY Facts (ProjectId decimal, InstanceId decimal,ParameterId decimal,Time timestamp,TimePeriod text,MaxValue double,MinValue double,AvgValue double,SumValue double, PRIMARY KEY ((ProjectId,InstanceId, ParameterId,TimePeriod), Time));
-create COLUMNFAMILY RawData (InstanceId decimal, ParameterId decimal,Time timestamp,TimePeriod text,Value double,PRIMARY KEY ((InstanceId, ParameterId), Time));
-create COLUMNFAMILY Projects (ProjectId decimal, Name text,PRIMARY KEY (ProjectId));
-create COLUMNFAMILY Instances (InstanceId decimal, Name text,  PRIMARY KEY (InstanceId));
-create COLUMNFAMILY Parameters (ParameterId decimal, Name text,Unit text,PRIMARY KEY (ParameterId));
-create COLUMNFAMILY ParametersInstancesMapping(ParameterId decimal,InstanceId decimal,PRIMARY KEY (ParameterId,InstanceId));
-create COLUMNFAMILY ProjectsInstancesMapping(ProjectId decimal,InstanceId decimal,PRIMARY KEY (ProjectId,InstanceId));
+CREATE KEYSPACE monitoring WITH REPLICATION = { 'class' : 'SimpleStrategy', 'replication_factor' : 3 };
+use monitoring ;
 
+create COLUMNFAMILY aggregated_data (project_id int, instance_id int,parameter_id int,time timestamp,time_period text,
+                                     max_value double, min_value double, avg_value double, sum_value double,
+                                     PRIMARY KEY ((project_id,instance_id, parameter_id,time_period), time));
+
+create COLUMNFAMILY raw_data (instance_id int, parameter_id int,time timestamp,time_period text,value double,PRIMARY KEY ((instance_id, parameter_id), time));
+create COLUMNFAMILY projects (project_id int, name text, instances set<int>, PRIMARY KEY (project_id));
+create COLUMNFAMILY instances (instance_id int, name text,parameters set<int>, PRIMARY KEY (instance_id));
+create COLUMNFAMILY parameters (parameter_id int, name text, unit text, min_value double, max_value double, PRIMARY KEY (parameter_id));
+
+create COLUMNFAMILY parameters_instances_mapping(parameter_id int,instance_id int,PRIMARY KEY (parameter_id,instance_id));
+create COLUMNFAMILY projects_instances_mapping(project_id int,instance_id int,PRIMARY KEY (project_id,instance_id));
+
+CREATE INDEX on raw_data (time_period);
+
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (1, 1, '2015-04-12 13:56:00', '1m', 40);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (1, 1, '2015-04-12 13:57:00', '1m', 41);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (1, 1, '2015-04-12 13:58:00', '1m', 42);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (1, 1, '2015-04-12 13:59:00', '1m', 40);
+
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (1, 2, '2015-04-12 13:56:00', '1m', 400);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (1, 2, '2015-04-12 13:57:00', '1m', 411);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (1, 2, '2015-04-12 13:58:00', '1m', 429);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (1, 2, '2015-04-12 13:59:00', '1m', 405);
+
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (2, 1, '2015-04-12 13:56:00', '1m', 65);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (2, 1, '2015-04-12 13:57:00', '1m', 64);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (2, 1, '2015-04-12 13:58:00', '1m', 69);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (2, 1, '2015-04-12 13:59:00', '1m', 61);
+
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (2, 2, '2015-04-12 13:56:00', '1m', 1201);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (2, 2, '2015-04-12 13:57:00', '1m', 1214);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (2, 2, '2015-04-12 13:58:00', '1m', 1225);
+INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (2, 2, '2015-04-12 13:59:00', '1m', 1105);
+
+
+
+INSERT INTO parameters (parameter_id, name, unit,min_value,max_value) VALUES (1, 'Cpu utilization', 'percent',0,100) ;
+INSERT INTO parameters (parameter_id, name, unit,min_value,max_value) VALUES (2, 'Memory used', 'Mb',0,65536) ;
+
+INSERT INTO instances (instance_id, name, parameters) VALUES (1, 'Aacer 3830tg', {1,2}) ;
+INSERT INTO instances (instance_id, name, parameters) VALUES (2, 'Macbook air', {1,2}) ;
+
+INSERT INTO projects (project_id, name, instances) VALUES (1, 'diplom', {1,2}) ;
