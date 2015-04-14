@@ -14,6 +14,7 @@ create COLUMNFAMILY parameters_instances_mapping(parameter_id int,instance_id in
 create COLUMNFAMILY projects_instances_mapping(project_id int,instance_id int,PRIMARY KEY (project_id,instance_id));
 
 CREATE INDEX on raw_data (time_period);
+CREATE INDEX on aggregated_data (time_period);
 
 INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (1, 1, '2015-04-12 13:56:00', '1m', 40);
 INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUES (1, 1, '2015-04-12 13:57:00', '1m', 41);

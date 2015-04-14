@@ -61,8 +61,6 @@ object DataGenerator {
             })
           )
       )
-
-      //      1.to(60).par.map(m=> new RawData(DateTime.now().minusHours(1).plusMinutes(m)))
     }
   }
 }
