@@ -1,8 +1,13 @@
 package app
+
+import java.util.{Calendar, GregorianCalendar}
+
 import com.datastax.spark.connector._
-import domain.{RawData, AggregatedData}
+import domain.{AggregatedData, RawData}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.joda.time.DateTime
+
+
 
 object main {
 
@@ -17,9 +22,8 @@ object main {
      val sc = new SparkContext(conf)
 
      calcHourAggregates(sc)
-
      calcDayAggregates(sc)
-
+     calcWeekAggregates(sc)
 
   }
 
@@ -65,6 +69,35 @@ object main {
         println("aggregatedData = " + aggregatedData)
         aggregatedData
     }).saveToCassandra("monitoring", "aggregated_data")
+  }
+
+
+  def calcWeekAggregates(sc: SparkContext) {
+    val dateTime = DateTime.now.withDayOfWeek(1).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
+    println("dateTime = " + dateTime)
+    sc.cassandraTable[AggregatedData]("monitoring", "aggregated_data").
+      where("time >= ? and time_period = ?", dateTime.getMillis, "1d").
+      groupBy(ad => {
+          val c = new GregorianCalendar()
+          c.setTime(ad.Time.toDate)
+          val weekOfMonth = c.get(Calendar.WEEK_OF_MONTH)
+         (ad.ProjectId, ad.InstanceId, ad.ParameterId, weekOfMonth)
+      }).map(ad => { println("ad = " + ad); ad }).
+      map(r => {
+        val projectId = r._1._1
+        val instanceId = r._1._2
+        val parameterId = r._1._3
+        val time = r._2.head.Time.withDayOfWeek(1).withHourOfDay(0).withMinuteOfHour(0)
+        val timePeriod = "1w"
+        val sum = r._2.fold(0.0)((acc, ad) => acc.asInstanceOf[Double] + ad.asInstanceOf[AggregatedData].Sum_Value).asInstanceOf[Double]
+        val max = r._2.fold(Double.MinValue)((max, cr) => Math.max(max.asInstanceOf[Double], cr.asInstanceOf[AggregatedData].Max_Value)).asInstanceOf[Double]
+        val min = r._2.fold(Double.MaxValue)((min, cr) => Math.min(min.asInstanceOf[Double], cr.asInstanceOf[AggregatedData].Min_Value)).asInstanceOf[Double]
+        val avg = (sum) / (r._2.size)
+        val aggregatedData = new AggregatedData(projectId, instanceId, parameterId, time, timePeriod, max, min, avg, sum)
+        println("aggregatedData = " + aggregatedData)
+        aggregatedData
+      })
+      .saveToCassandra("monitoring", "aggregated_data")
   }
 
 }
