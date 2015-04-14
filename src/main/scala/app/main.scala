@@ -1,6 +1,6 @@
 package app
 import com.datastax.spark.connector._
-import domain.AggregatedData
+import domain.{RawData, AggregatedData}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.joda.time.DateTime
 
@@ -16,7 +16,7 @@ object main {
      val conf = new SparkConf().setMaster("local[4]").setAppName("tests").set("spark.cassandra.connection.host", "127.0.0.1")
      val sc = new SparkContext(conf)
 
-//     calcHourAggregates(sc)
+     calcHourAggregates(sc)
 
      calcDayAggregates(sc)
 
@@ -24,19 +24,19 @@ object main {
   }
 
   def calcHourAggregates(sc: SparkContext) {
-    sc.cassandraTable("monitoring", "raw_data").
-      select("instance_id", "parameter_id", "time", "time_period", "value").
-      where("time_period = ?", "1m").map(cr => { println(cr); cr }).
-      groupBy(row => (row.get[Int]("instance_id"), row.get[Int]("parameter_id"), row.get[DateTime]("time").getHourOfDay)).map(r => {println("groupby " + r);   r }).
+    val dateTime = DateTime.now.minusHours(3).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
+    sc.cassandraTable[RawData]("monitoring", "raw_data").
+      where("time > ? and time_period = ?", dateTime.getMillis, "1m").map(cr => { println(cr); cr }).
+      groupBy(rd => (rd.InstanceId, rd.ParameterId, rd.Time.getHourOfDay)).map(r => {println("groupby " + r);   r }).
       map(r => {
         val instanceId = r._1._1
         val parameterId = r._1._2
-        val time = r._2.head.get[DateTime]("time").withMinuteOfHour(0)
+        val time = r._2.head.Time.withMinuteOfHour(0)
         val timePeriod = "1h"
         val projectId = getProjectId(instanceId)
-        val sum = r._2.fold(0.0)((acc, cr) => acc.asInstanceOf[Double] + cr.asInstanceOf[CassandraRow].get[Double]("value")).asInstanceOf[Double]
-        val max = r._2.fold(Double.MinValue)((max, cr) => Math.max(max.asInstanceOf[Double], cr.asInstanceOf[CassandraRow].get[Double]("value"))).asInstanceOf[Double]
-        val min = r._2.fold(Double.MaxValue)((min, cr) => Math.min(min.asInstanceOf[Double], cr.asInstanceOf[CassandraRow].get[Double]("value"))).asInstanceOf[Double]
+        val sum = r._2.fold(0.0)((acc, cr) => acc.asInstanceOf[Double] + cr.asInstanceOf[RawData].Value).asInstanceOf[Double]
+        val max = r._2.fold(Double.MinValue)((max, cr) => Math.max(max.asInstanceOf[Double], cr.asInstanceOf[RawData].Value)).asInstanceOf[Double]
+        val min = r._2.fold(Double.MaxValue)((min, cr) => Math.min(min.asInstanceOf[Double], cr.asInstanceOf[RawData].Value)).asInstanceOf[Double]
         val avg = (sum.asInstanceOf[Double]) / (r._2.size)
         val aggregatedData = new AggregatedData(projectId, instanceId, parameterId, time, timePeriod, max, min, avg, sum)
         println("aggregatedData = " + aggregatedData)
@@ -46,7 +46,10 @@ object main {
 
 
   def calcDayAggregates(sc: SparkContext) {
+    val dateTime = DateTime.now.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
+
     sc.cassandraTable[AggregatedData]("monitoring", "aggregated_data").
+      where("time > ? and time_period = ?", dateTime.getMillis, "1h").
       groupBy(ad => (ad.ProjectId, ad.InstanceId, ad.ParameterId, ad.Time.getDayOfWeek)).map(ad => { println("ad = " + ad); ad }).
       map(r => {
         val projectId = r._1._1

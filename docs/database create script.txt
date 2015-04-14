@@ -3,7 +3,7 @@ use monitoring ;
 
 create COLUMNFAMILY aggregated_data (project_id int, instance_id int,parameter_id int,time timestamp,time_period text,
                                      max_value double, min_value double, avg_value double, sum_value double,
-                                     PRIMARY KEY ((project_id,instance_id, parameter_id,time_period), time));
+                                     PRIMARY KEY ((project_id,instance_id, parameter_id), time));
 
 create COLUMNFAMILY raw_data (instance_id int, parameter_id int,time timestamp,time_period text,value double,PRIMARY KEY ((instance_id, parameter_id), time));
 create COLUMNFAMILY projects (project_id int, name text, instances set<int>, PRIMARY KEY (project_id));
@@ -45,3 +45,34 @@ INSERT INTO instances (instance_id, name, parameters) VALUES (1, 'Aacer 3830tg',
 INSERT INTO instances (instance_id, name, parameters) VALUES (2, 'Macbook air', {1,2}) ;
 
 INSERT INTO projects (project_id, name, instances) VALUES (1, 'diplom', {1,2}) ;
+
+
+ad = ((1,1,1,1),CompactBuffer(AggregatedData(1,1,1,2015-04-20T13:00:00.000+04:00,1h,99.0,1.0,52.233333333333334,3134.0)))
+aggregatedData = AggregatedData(1,1,1,2015-04-20T00:00:00.000+04:00,1d,99.0,1.0,3134.0,3134.0)
+ad = ((1,2,2,1),CompactBuffer(AggregatedData(1,2,2,2015-04-20T13:00:00.000+04:00,1h,64798.0,2353.0,33379.21666666667,2002753.0)))
+aggregatedData = AggregatedData(1,2,2,2015-04-20T00:00:00.000+04:00,1d,64798.0,2353.0,2002753.0,2002753.0)
+ad = ((1,2,1,1),CompactBuffer(AggregatedData(1,2,1,2015-04-20T13:00:00.000+04:00,1h,99.0,2.0,51.166666666666664,3070.0)))
+aggregatedData = AggregatedData(1,2,1,2015-04-20T00:00:00.000+04:00,1d,99.0,2.0,3070.0,3070.0)
+ad = ((1,1,2,1),CompactBuffer(AggregatedData(1,1,2,2015-04-20T13:00:00.000+04:00,1h,64782.0,1301.0,33170.2,1990212.0)))
+aggregatedData = AggregatedData(1,1,2,2015-04-20T00:00:00.000+04:00,1d,64782.0,1301.0,1990212.0,1990212.0)
+
+
+
+ad = ((1,1,1,1),CompactBuffer(AggregatedData(1,1,1,2015-04-20T00:00:00.000+04:00,1d,99.0,1.0,3134.0,3134.0), AggregatedData(1,1,1,2015-04-20T13:00:00.000+04:00,1h,95.0,2.0,52.25,3135.0), AggregatedData(1,1,1,2015-04-20T14:00:00.000+04:00,1h,98.0,3.0,45.78333333333333,2747.0)))
+aggregatedData = AggregatedData(1,1,1,2015-04-20T00:00:00.000+04:00,1d,99.0,1.0,3005.3333333333335,9016.0)
+ad = ((1,2,2,1),CompactBuffer(AggregatedData(1,2,2,2015-04-20T00:00:00.000+04:00,1d,64798.0,2353.0,2002753.0,2002753.0), AggregatedData(1,2,2,2015-04-20T13:00:00.000+04:00,1h,63944.0,36.0,35681.46666666667,2140888.0), AggregatedData(1,2,2,2015-04-20T14:00:00.000+04:00,1h,65243.0,1370.0,31248.7,1874922.0)))
+aggregatedData = AggregatedData(1,2,2,2015-04-20T00:00:00.000+04:00,1d,65243.0,36.0,2006187.6666666667,6018563.0)
+ad = ((1,2,1,1),CompactBuffer(AggregatedData(1,2,1,2015-04-20T13:00:00.000+04:00,1h,90.0,0.0,43.266666666666666,2596.0), AggregatedData(1,2,1,2015-04-20T14:00:00.000+04:00,1h,96.0,0.0,45.983333333333334,2759.0), AggregatedData(1,2,1,2015-04-20T00:00:00.000+04:00,1d,99.0,2.0,3070.0,3070.0)))
+aggregatedData = AggregatedData(1,2,1,2015-04-20T00:00:00.000+04:00,1d,99.0,0.0,2808.3333333333335,8425.0)
+ad = ((1,1,2,1),CompactBuffer(AggregatedData(1,1,2,2015-04-20T00:00:00.000+04:00,1d,64782.0,1301.0,1990212.0,1990212.0), AggregatedData(1,1,2,2015-04-20T13:00:00.000+04:00,1h,64267.0,2944.0,30388.05,1823283.0), AggregatedData(1,1,2,2015-04-20T14:00:00.000+04:00,1h,64863.0,459.0,30709.516666666666,1842571.0)))
+aggregatedData = AggregatedData(1,1,2,2015-04-20T00:00:00.000+04:00,1d,64863.0,459.0,1885355.3333333333,5656066.0)
+
+
+ad = ((1,1,1,1),CompactBuffer(AggregatedData(1,1,1,2015-04-20T13:00:00.000+04:00,1h,95.0,2.0,52.25,3135.0), AggregatedData(1,1,1,2015-04-20T14:00:00.000+04:00,1h,94.0,1.0,44.266666666666666,2656.0), AggregatedData(1,1,1,2015-04-20T15:00:00.000+04:00,1h,99.0,0.0,43.05,2583.0)))
+aggregatedData = AggregatedData(1,1,1,2015-04-20T00:00:00.000+04:00,1d,99.0,0.0,2791.3333333333335,8374.0)
+ad = ((1,2,2,1),CompactBuffer(AggregatedData(1,2,2,2015-04-20T13:00:00.000+04:00,1h,63944.0,36.0,35681.46666666667,2140888.0), AggregatedData(1,2,2,2015-04-20T14:00:00.000+04:00,1h,64870.0,2108.0,31517.75,1891065.0), AggregatedData(1,2,2,2015-04-20T15:00:00.000+04:00,1h,64991.0,640.0,27436.85,1646211.0)))
+aggregatedData = AggregatedData(1,2,2,2015-04-20T00:00:00.000+04:00,1d,64991.0,36.0,1892721.3333333333,5678164.0)
+ad = ((1,2,1,1),CompactBuffer(AggregatedData(1,2,1,2015-04-20T13:00:00.000+04:00,1h,90.0,0.0,43.266666666666666,2596.0), AggregatedData(1,2,1,2015-04-20T14:00:00.000+04:00,1h,99.0,0.0,49.13333333333333,2948.0), AggregatedData(1,2,1,2015-04-20T15:00:00.000+04:00,1h,92.0,2.0,50.11666666666667,3007.0)))
+aggregatedData = AggregatedData(1,2,1,2015-04-20T00:00:00.000+04:00,1d,99.0,0.0,2850.3333333333335,8551.0)
+ad = ((1,1,2,1),CompactBuffer(AggregatedData(1,1,2,2015-04-20T13:00:00.000+04:00,1h,64267.0,2944.0,30388.05,1823283.0), AggregatedData(1,1,2,2015-04-20T14:00:00.000+04:00,1h,64529.0,1767.0,33475.86666666667,2008552.0), AggregatedData(1,1,2,2015-04-20T15:00:00.000+04:00,1h,62280.0,1191.0,33489.71666666667,2009383.0)))
+aggregatedData = AggregatedData(1,1,2,2015-04-20T00:00:00.000+04:00,1d,64529.0,1191.0,1947072.6666666667,5841218.0)
