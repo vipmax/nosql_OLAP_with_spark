@@ -13,7 +13,7 @@ import scala.util.Random
  * Created by i00 on 4/12/15.
  */
 object DataGenerator {
-  val conf = new SparkConf().setMaster("local[4]").setAppName("tests").set("spark.cassandra.connection.host", "127.0.0.1")
+  val conf = new SparkConf().setAppName("Generator").set("spark.cassandra.connection.host", "127.0.0.1")
   val sc = new SparkContext(conf)
 
   val projects = sc.cassandraTable[Project]("monitoring", "projects").collect()
@@ -22,17 +22,19 @@ object DataGenerator {
 
 
   def main(args: Array[String]) {
+//
+//    val actorSystem = ActorSystem()
+//    val scheduler = actorSystem.scheduler
+//    implicit val executor = actorSystem.dispatcher
+//
+//
+//    scheduler.schedule(
+//      initialDelay = 0 seconds,
+//      interval = 1 hour,
+//      runnable = new GeneratorTask
+//    )
 
-    val actorSystem = ActorSystem()
-    val scheduler = actorSystem.scheduler
-    implicit val executor = actorSystem.dispatcher
-
-
-    scheduler.schedule(
-      initialDelay = 0 seconds,
-      interval = 1 minute,
-      runnable = new GeneratorTask
-    )
+    new GeneratorTask().run()
   }
 
   def showAllData() {
@@ -46,6 +48,7 @@ object DataGenerator {
 
 
   class GeneratorTask extends Runnable{
+
     override def run() {
 
       projects.foreach(pr=>

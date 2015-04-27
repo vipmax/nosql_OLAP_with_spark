@@ -18,7 +18,7 @@ object main {
 
   def main(args: Array[String]) {
 
-     val conf = new SparkConf().setMaster("local[4]").setAppName("tests").set("spark.cassandra.connection.host", "127.0.0.1")
+     val conf = new SparkConf().setAppName("Aggregator").set("spark.cassandra.connection.host", "127.0.0.1")
      val sc = new SparkContext(conf)
 
      calcHourAggregates(sc)
