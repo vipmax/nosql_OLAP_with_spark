@@ -9,7 +9,7 @@ import com.datastax.spark.connector._
  * Created by vipmax on 27.04.2015.
  */
 object SimpleOut {
-  val conf = new SparkConf().setAppName("Show Data").set("spark.cassandra.connection.host", "127.0.0.1")
+  val conf = new SparkConf().setAppName("Show Data").setMaster("local[4]").set("spark.cassandra.connection.host", "127.0.0.1")
   val sc = new SparkContext(conf)
 
   def main(args: Array[String]) {

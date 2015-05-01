@@ -9,7 +9,7 @@ import org.joda.time.DateTime
 
 
 
-object main {
+object Aggregator {
 
   val projectsInstancesMap = Map(1 -> List(1,2))
 
@@ -18,17 +18,17 @@ object main {
 
   def main(args: Array[String]) {
 
-     val conf = new SparkConf().setAppName("Aggregator").set("spark.cassandra.connection.host", "127.0.0.1")
+     val conf = new SparkConf().setMaster("local[4]").setAppName("Aggregator").set("spark.cassandra.connection.host", "127.0.0.1")
      val sc = new SparkContext(conf)
 
      calcHourAggregates(sc)
-     calcDayAggregates(sc)
-     calcWeekAggregates(sc)
+//     calcDayAggregates(sc)
+//     calcWeekAggregates(sc)
 
   }
 
   def calcHourAggregates(sc: SparkContext) {
-    val dateTime = DateTime.now.minusHours(3).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
+    val dateTime = DateTime.now.minusHours(2).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
     sc.cassandraTable[RawData]("monitoring", "raw_data").
       where("time > ? and time_period = ?", dateTime.getMillis, "1m").map(cr => { println(cr); cr }).
       groupBy(rd => (rd.InstanceId, rd.ParameterId, rd.Time.getHourOfDay)).map(r => {println("groupby " + r);   r }).
