@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="SBT" type="JAVA_MODULE" version="4">
-  <component name="FacetManager">
-    <facet type="scala" name="Scala">
-      <configuration>
-        <option name="compilerLibraryLevel" value="Project" />
-        <option name="compilerLibraryName" value="SBT:: scala-compiler-bundle:2.10.4" />
-      </configuration>
-    </facet>
-  </component>
+  <component name="FacetManager" />
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../target/scala-2.10/classes" />
     <output-test url="file://$MODULE_DIR$/../../target/scala-2.10/test-classes" />
@@ -160,7 +153,6 @@
     <orderEntry type="library" name="SBT: org.objenesis:objenesis:1.2" level="project" />
     <orderEntry type="library" name="SBT: org.roaringbitmap:RoaringBitmap:0.4.5" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang:scala-compiler:2.10.4" level="project" />
-    <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.10.4" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang:scala-reflect:2.10.4" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang:scalap:2.10.0" level="project" />
     <orderEntry type="library" name="SBT: org.slf4j:jcl-over-slf4j:1.7.5" level="project" />
@@ -182,6 +174,7 @@
     <orderEntry type="library" name="SBT: org.yaml:snakeyaml:1.11" level="project" />
     <orderEntry type="library" name="SBT: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="SBT: xmlenc:xmlenc:0.52" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.10.4" level="project" />
   </component>
 </module>
 

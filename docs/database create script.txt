@@ -40,8 +40,9 @@ INSERT INTO raw_data (instance_id, parameter_id, time, time_period, value) VALUE
 
 INSERT INTO parameters (parameter_id, name, unit,min_value,max_value) VALUES (1, 'Cpu utilization', 'percent',0,100) ;
 INSERT INTO parameters (parameter_id, name, unit,min_value,max_value) VALUES (2, 'Memory used', 'Mb',0,65536) ;
+INSERT INTO parameters (parameter_id, name, unit,min_value,max_value) VALUES (3, 'Temperature on CPU', 'degrees',0,110) ;
 
-INSERT INTO instances (instance_id, name, parameters) VALUES (1, 'Aacer 3830tg', {1,2}) ;
+INSERT INTO instances (instance_id, name, parameters) VALUES (1, 'acer 3830tg', {1,2,3}) ;
 INSERT INTO instances (instance_id, name, parameters) VALUES (2, 'Macbook air', {1,2}) ;
 
 INSERT INTO projects (project_id, name, instances) VALUES (1, 'diplom', {1,2}) ;

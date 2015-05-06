@@ -16,13 +16,19 @@ import scala.util.Random
  * Created by i00 on 4/12/15.
  */
 object DataGenerator {
+  System.setProperty("hadoop.home.dir","C:\\Java\\spark-1.3.1-bin-hadoop2.6\\winutil")
+
+
   val conf = new SparkConf().setMaster("local[4]").setAppName("Generator").set("spark.cassandra.connection.host", "127.0.0.1")
   val sc = new SparkContext(conf)
 
-  val projects = sc.cassandraTable[Project]("monitoring", "projects").collect()
-  val instances = sc.cassandraTable[Instance]("monitoring", "instances").collect()
-  val parameters = sc.cassandraTable[Parameter]("monitoring", "parameters").collect()
+  var projects = sc.cassandraTable[Project]("monitoring", "projects").collect()
+  var instances = sc.cassandraTable[Instance]("monitoring", "instances").collect()
+  var parameters = sc.cassandraTable[Parameter]("monitoring", "parameters").collect()
 
+  println("projects = " + projects.foreach(println))
+  println("instances = " + instances.foreach(println))
+  println("parameters = " + parameters.foreach(println))
 
   def main(args: Array[String]) {
 
@@ -36,8 +42,13 @@ object DataGenerator {
       interval = 1 minute,
       runnable = new GeneratorTask
     )
+    
+    scheduler.schedule(
+      initialDelay = 0 seconds,
+      interval = 5 minute,
+      runnable = new UpdateMetaDataTask
+    )
 
-    new GeneratorTask().run()
   }
 
   def showAllData() {
@@ -58,20 +69,27 @@ object DataGenerator {
       projects.foreach(pr=>
         instances.filter(i => pr.Instances.contains(i.InstanceId)).
           foreach(i =>
-          parameters.filter(p => i.parameters.contains(p.ParameterId)).
-            foreach(p => {
+            parameters.filter(p => i.parameters.contains(p.ParameterId)).
+              foreach(p => {
 
-              datas +=  new RawData(i.InstanceId, p.ParameterId,
-                                               new DateTime(new Date()).withSecondOfMinute(0).withMillisOfSecond(0),
-                                               "1m", Random.nextInt(p.Max_Value.toInt))
-
-
-            })
-          )
+                datas +=  new RawData(i.InstanceId, p.ParameterId,
+                                                 new DateTime(new Date()).withSecondOfMinute(0).withMillisOfSecond(0),
+                                                 "1m", Random.nextInt(p.Max_Value.toInt))
+              })
+            )
       )
 
       println("datas = " + datas)
       sc.parallelize(datas.toSeq).saveToCassandra("monitoring", "raw_data")
+    }
+  }
+  
+  class UpdateMetaDataTask extends Runnable{
+
+    override def run() {
+      projects = sc.cassandraTable[Project]("monitoring", "projects").collect()
+      instances = sc.cassandraTable[Instance]("monitoring", "instances").collect()
+      parameters = sc.cassandraTable[Parameter]("monitoring", "parameters").collect()
     }
   }
 }
