@@ -9,7 +9,7 @@ version := "1.0"
 scalaVersion := "2.10.4"
 
 libraryDependencies ++= Seq(
-  "org.apache.spark" % "spark-core_2.10" % "1.2.1" %"provided",
+  "org.apache.spark" % "spark-core_2.10" % "1.2.1" ,
   ("com.datastax.spark" %% "spark-cassandra-connector-java" % "1.1.1").exclude("org.apache.cassandra","cassandra-clientutil"),
   "org.apache.cassandra" % "cassandra-all" % "2.1.0"
 )

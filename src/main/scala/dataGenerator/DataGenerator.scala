@@ -11,12 +11,12 @@ import org.joda.time.{DateTimeZone, DateTime}
 import scala.collection.mutable
 import scala.concurrent.duration._
 import scala.util.Random
+import org.apache.spark.SparkConf
 
 /**
  * Created by i00 on 4/12/15.
  */
 object DataGenerator {
-  System.setProperty("hadoop.home.dir","C:\\Java\\spark-1.3.1-bin-hadoop2.6\\winutil")
 
 
   val conf = new SparkConf().setMaster("local[4]").setAppName("Generator").set("spark.cassandra.connection.host", "127.0.0.1")
@@ -31,6 +31,7 @@ object DataGenerator {
   println("parameters = " + parameters.foreach(println))
 
   def main(args: Array[String]) {
+    System.setProperty("hadoop.home.dir","C:\\Java\\spark-1.3.1-bin-hadoop2.6\\winutil")
 
     val actorSystem = ActorSystem()
     val scheduler = actorSystem.scheduler

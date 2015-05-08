@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module external.linked.project.path="$MODULE_DIR$/../.." external.root.project.path="$MODULE_DIR$/../.." external.system.id="SBT" type="JAVA_MODULE" version="4">
-  <component name="FacetManager" />
+  <component name="FacetManager">
+    <facet type="scala" name="Scala">
+      <configuration>
+        <option name="compilerLibraryLevel" value="Project" />
+        <option name="compilerLibraryName" value="SBT:: scala-compiler-bundle:2.10.4" />
+      </configuration>
+    </facet>
+  </component>
   <component name="NewModuleRootManager" inherit-compiler-output="false">
     <output url="file://$MODULE_DIR$/../../target/scala-2.10/classes" />
     <output-test url="file://$MODULE_DIR$/../../target/scala-2.10/test-classes" />
@@ -9,11 +16,11 @@
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/scala" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.10/src_managed/main" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/java" isTestSource="false" />
+      <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.10/src_managed/test" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/scala" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.10/src_managed/test" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.10/resource_managed/main" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.10/resource_managed/main" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../target/scala-2.10/resource_managed/test" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/../../src/test/resources" type="java-test-resource" />
     </content>
@@ -32,6 +39,7 @@
     <orderEntry type="library" name="SBT: com.codahale.metrics:metrics-json:3.0.0" level="project" />
     <orderEntry type="library" name="SBT: com.codahale.metrics:metrics-jvm:3.0.0" level="project" />
     <orderEntry type="library" name="SBT: com.datastax.cassandra:cassandra-driver-core:2.1.3" level="project" />
+    <orderEntry type="library" name="SBT: com.datastax.spark:spark-cassandra-connector-java_2.10:1.1.1" level="project" />
     <orderEntry type="library" name="SBT: com.datastax.spark:spark-cassandra-connector_2.10:1.1.1" level="project" />
     <orderEntry type="library" name="SBT: com.esotericsoftware.kryo:kryo:2.21" level="project" />
     <orderEntry type="library" name="SBT: com.esotericsoftware.minlog:minlog:1.2" level="project" />
@@ -91,7 +99,6 @@
     <orderEntry type="library" name="SBT: org.antlr:stringtemplate:3.2.1" level="project" />
     <orderEntry type="library" name="SBT: org.apache.avro:avro:1.7.4" level="project" />
     <orderEntry type="library" name="SBT: org.apache.cassandra:cassandra-all:2.1.0" level="project" />
-    <orderEntry type="library" name="SBT: org.apache.cassandra:cassandra-clientutil:2.1.2" level="project" />
     <orderEntry type="library" name="SBT: org.apache.cassandra:cassandra-thrift:2.1.2" level="project" />
     <orderEntry type="library" name="SBT: org.apache.commons:commons-compress:1.4.1" level="project" />
     <orderEntry type="library" name="SBT: org.apache.commons:commons-lang3:3.3.2" level="project" />
@@ -153,6 +160,7 @@
     <orderEntry type="library" name="SBT: org.objenesis:objenesis:1.2" level="project" />
     <orderEntry type="library" name="SBT: org.roaringbitmap:RoaringBitmap:0.4.5" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang:scala-compiler:2.10.4" level="project" />
+    <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.10.4" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang:scala-reflect:2.10.4" level="project" />
     <orderEntry type="library" name="SBT: org.scala-lang:scalap:2.10.0" level="project" />
     <orderEntry type="library" name="SBT: org.slf4j:jcl-over-slf4j:1.7.5" level="project" />
@@ -174,7 +182,6 @@
     <orderEntry type="library" name="SBT: org.yaml:snakeyaml:1.11" level="project" />
     <orderEntry type="library" name="SBT: stax:stax-api:1.0.1" level="project" />
     <orderEntry type="library" name="SBT: xmlenc:xmlenc:0.52" level="project" />
-    <orderEntry type="library" name="SBT: org.scala-lang:scala-library:2.10.4" level="project" />
   </component>
 </module>
 
