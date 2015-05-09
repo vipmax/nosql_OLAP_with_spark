@@ -35,7 +35,7 @@ object Aggregator {
     scheduler.schedule(
       initialDelay = (60 - DateTime.now.getMinuteOfHour) minute,
       interval = 1 hour,
-      runnable = new HourTask
+      runnable = new HourTask(2)
     )
 
     scheduler.schedule(
@@ -57,23 +57,22 @@ object Aggregator {
       runnable = new MonthTask
     )
 
-    new HourTask().run()
+    new HourTask(24).run()
     new DayTask().run()
     new WeekTask().run()
     new MonthTask().run()
     new YearTask().run()
-
   }
 
-  class HourTask extends Runnable {
+  class HourTask (minusHours: Int) extends Runnable {
 
     override def run() {
       println("HourTask")
 
-            val dateTime = DateTime.now.minusHours(2).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
+            val dateTime = DateTime.now.minusHours(minusHours).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
       sc.cassandraTable[RawData]("monitoring", "raw_data").
         where("time > ? and time_period = ?", dateTime.getMillis, "1m").map(cr => { println(cr);  cr }).
-        groupBy(rd => (rd.InstanceId, rd.ParameterId, rd.Time.getHourOfDay)).map(r => {println("groupby " + r); r }).
+        groupBy(rd => (rd.InstanceId, rd.ParameterId,rd.Time.getDayOfYear, rd.Time.getHourOfDay)).map(r => {println("groupby " + r); r }).
         map(r => {
         val instanceId = r._1._1
         val parameterId = r._1._2
