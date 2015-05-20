@@ -52,6 +52,7 @@ object DataGenerator {
 
   }
 
+
   def showAllData() {
     sc.cassandraTable[RawData]("monitoring", "raw_data").foreach(println)
     sc.cassandraTable[Project]("monitoring", "projects").foreach(println)
@@ -68,14 +69,16 @@ object DataGenerator {
       val datas = mutable.MutableList[RawData]()
 
       projects.foreach(pr=>
-        instances.filter(i => pr.Instances.contains(i.InstanceId)).
+        instances.filter(i => pr.instances.contains(i.instanceId)).
           foreach(i =>
-            parameters.filter(p => i.parameters.contains(p.ParameterId)).
+            parameters.filter(p => i.parameters.contains(p.parameterId)).
               foreach(p => {
 
-                datas +=  new RawData(i.InstanceId, p.ParameterId,
-                                                 new DateTime(new Date()).withSecondOfMinute(0).withMillisOfSecond(0),
-                                                 "1m", Random.nextInt(p.Max_Value.toInt))
+                val time = DateTime.now.withSecondOfMinute(0).withMillisOfSecond(0)
+                datas +=  new RawData(i.instanceId, p.parameterId,
+                                                 time,
+                                                 "1m",
+                                                 Random.nextInt(p.maxValue.toInt))
               })
             )
       )

@@ -20,11 +20,11 @@ object SimpleOut {
   }
 
   def showAllData() {
-    sc.cassandraTable[Project]("monitoring", "projects").foreach(println)
-    sc.cassandraTable[Instance]("monitoring", "instances").foreach(println)
-    sc.cassandraTable[Parameter]("monitoring", "parameters").foreach(println)
-    sc.cassandraTable[RawData]("monitoring", "raw_data").foreach(println)
-    sc.cassandraTable[AggregatedData]("monitoring", "aggregated_data").foreach(println)
+//    sc.cassandraTable[Project]("monitoring", "projects").foreach(println)
+//    sc.cassandraTable[Instance]("monitoring", "instances").foreach(println)
+//    sc.cassandraTable[Parameter]("monitoring", "parameters").foreach(println)
+    println("count = "+sc.cassandraTable[RawData]("monitoring", "raw_data").count())
+//    sc.cassandraTable[AggregatedData]("monitoring", "aggregated_data").foreach(println)
   }
 
 }
