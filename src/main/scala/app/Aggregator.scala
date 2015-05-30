@@ -9,14 +9,11 @@ import org.apache.spark.{SparkConf, SparkContext}
 import org.joda.time.DateTime
 import scala.concurrent.duration._
 
-
-
-
 object Aggregator {
 
 
 
-  val conf = new SparkConf().setMaster("local[4]").setAppName("Aggregator").set("spark.cassandra.connection.host", "127.0.0.1")
+  val conf = new SparkConf().setAppName("Aggregator").setMaster("local[4]").set("spark.cassandra.connection.host", "127.0.0.1")
   val sc = new SparkContext(conf)
 
   def getProjectId(instanceId: Int) = projects.find(_.instances.contains(instanceId)).get.projectId
@@ -32,36 +29,36 @@ object Aggregator {
     implicit val executor = actorSystem.dispatcher
 
 
-    scheduler.schedule(
-      initialDelay = (60 - DateTime.now.getMinuteOfHour) minute,
-      interval = 1 hour,
-      runnable = new HourTask(2)
-    )
+//    scheduler.schedule(
+//      initialDelay = (60 - DateTime.now.getMinuteOfHour) minute,
+//      interval = 1 hour,
+//      runnable = new HourTask(minusHours = 24*2)
+//    )
+//
+//    scheduler.schedule(
+//      initialDelay = (60 - DateTime.now.getMinuteOfHour) minute,
+//      interval = 1 hour,
+//      runnable = new DayTask(minusDays = 2)
+//    )
 
-    scheduler.schedule(
-      initialDelay = (60 - DateTime.now.getMinuteOfHour) minute,
-      interval = 1 hour,
-      runnable = new DayTask
-    )
-
-    scheduler.schedule(
+    /*scheduler.schedule(
       initialDelay = (60 - DateTime.now.getMinuteOfHour) minute,
       interval = 1 hour,
       runnable = new WeekTask
-    )
+    )*/
 
 
-    scheduler.schedule(
-      initialDelay = (60 - DateTime.now.getMinuteOfHour) minute,
-      interval = 1 hour,
-      runnable = new MonthTask
-    )
+//    scheduler.schedule(
+//      initialDelay = (60 - DateTime.now.getMinuteOfHour) minute,
+//      interval = 1 hour,
+//      runnable = new MonthTask
+//    )
 
-    new HourTask(24).run()
-    new DayTask().run()
-    new WeekTask().run()
-    new MonthTask().run()
-    new YearTask().run()
+    new HourTask(minusHours = 24*10).run()
+    new DayTask(minusDays = 10).run()
+//    new WeekTask().run()
+//    new MonthTask().run()
+//    new YearTask().run()
   }
 
   class HourTask (minusHours: Int) extends Runnable {
@@ -69,10 +66,11 @@ object Aggregator {
     override def run() {
       println("HourTask")
 
-            val dateTime = DateTime.now.minusHours(minusHours).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
+      val dateTime = DateTime.now.minusHours(minusHours).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
+
       sc.cassandraTable[RawData]("monitoring", "raw_data").
-        where("time > ? and time_period = ?", dateTime.getMillis, "1m").map(cr => { println(cr);  cr }).
-        groupBy(rd => (rd.instanceId, rd.parameterId,rd.time.getDayOfYear, rd.time.getHourOfDay)).map(r => {println("groupby " + r); r }).
+        where("time > ? ",  dateTime.getMillis).
+        groupBy(rd => (rd.instanceId, rd.parameterId, rd.timePeriod, rd.time.getDayOfYear, rd.time.getHourOfDay)).
         map(r => {
         val instanceId = r._1._1
         val parameterId = r._1._2
@@ -90,16 +88,16 @@ object Aggregator {
     }
   }
 
-  class DayTask  extends Runnable {
+  class DayTask (minusDays: Int)  extends Runnable {
 
     override def run() {
       println("DayTask")
 
-      val dateTime = DateTime.now.withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
+      val dateTime = DateTime.now.minusDays(minusDays).withHourOfDay(0).withMinuteOfHour(0).withSecondOfMinute(0).withMillisOfSecond(0)
 
       sc.cassandraTable[AggregatedData]("monitoring", "aggregated_data").
-        where("time > ? and time_period = ?", dateTime.getMillis, "1h").
-        groupBy(ad => (ad.projectId, ad.instanceId, ad.parameterId, ad.time.getDayOfWeek)).map(ad => { println("ad = " + ad); ad }).
+        where("time > ? ",   dateTime.getMillis).filter(_.timePeriod.equals("1h")).
+        groupBy(ad => (ad.projectId, ad.instanceId, ad.parameterId, ad.time.getDayOfYear, ad.time.getDayOfWeek)).map(ad => { println("ad = " + ad); ad }).
         map(r => {
         val projectId = r._1._1
         val instanceId = r._1._2
@@ -117,7 +115,7 @@ object Aggregator {
     }
   }
 
-  class WeekTask extends Runnable {
+ /* class WeekTask extends Runnable {
 
     override def run() {
       println("WeekTask")
@@ -147,7 +145,7 @@ object Aggregator {
       })
         .saveToCassandra("monitoring", "aggregated_data")
     }
-  }
+  }*/
 
   //use DayTask output data
   class MonthTask extends Runnable {
